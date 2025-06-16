@@ -1,7 +1,8 @@
 import Order from "../models/order.js";
+import Product from "../models/product.js";
 import { generateUniqueId } from "../utils/helperUtil.js";
 
-export function createOrder(req, res) {
+export async function createOrder(req, res) {
   if (req.user == null) {
     req.status(401).json({
       message: "Unauthorized",
@@ -19,6 +20,25 @@ export function createOrder(req, res) {
     billItems: [],
     total: 0,
   };
+
+  for (let i = 0; i < body.billItems.length; i++) {
+    const product = await Product.findOne({productId: body.billItems[i].productId});
+    if (product == null) {
+      res.status(404).json({
+        message: "Product with Product ID " + body.billItems[i].productId + " Not Found"
+      });
+      return;
+    }
+
+    orderData.billItems[i] = {
+      productId: product.productId,
+      productName: product.name,
+      Image: product.Image[0],
+      quantity: body.billItems[i].quantity,
+      price: product.price
+    }
+    orderData.total = orderData.total + product.price * body.billItems[i].quantity;
+  }
 
   const order = new Order(orderData);
   order
