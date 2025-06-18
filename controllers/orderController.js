@@ -20,7 +20,6 @@ export async function createOrder(req, res) {
     billItems: [],
     total: 0,
   };
-
   for (let i = 0; i < body.billItems.length; i++) {
     const product = await Product.findOne({productId: body.billItems[i].productId});
     if (product == null) {
@@ -33,7 +32,7 @@ export async function createOrder(req, res) {
     orderData.billItems[i] = {
       productId: product.productId,
       productName: product.name,
-      Image: product.Image[0],
+      Image: product.images[0],
       quantity: body.billItems[i].quantity,
       price: product.price
     }
@@ -45,7 +44,7 @@ export async function createOrder(req, res) {
     .save()
     .then(() => {
       res.json({
-        message: "Order saved successfully",
+        message: "Order Saved successfully",
       });
     })
     .catch(() => {
