@@ -86,3 +86,26 @@ export function getOrders(req, res) {
       });
   }
 }
+
+export async function updateOrder(req, res){
+  try {
+    if (req.user == null) {
+      res.status(401).json({
+        message: "Unauthorized",
+      });
+      return;
+    }
+    if (req.user.role != "admin") {
+      res.status(403).json({
+        message: "You are Unauthorized to Update an Order",
+      });
+      return;
+    }
+    const orderId = req.params.orderId;
+    const order = await Order.findOneAndUpdate({ orderId: orderId }, req.body);
+  } catch (error) {
+    res.status(500).json({
+      message: "Örder not Updated",
+    });
+  }
+}
