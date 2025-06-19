@@ -12,7 +12,7 @@ export async function createOrder(req, res) {
 
   const body = req.body;
   const orderData = {
-    orderId: generateUniqueId("ORD"),
+    orderId: generateUniqueId("ORD", 10),
     email: req.user.email,
     name: body.name,
     address: body.address,
