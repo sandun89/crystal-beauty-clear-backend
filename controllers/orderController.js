@@ -32,7 +32,7 @@ export async function createOrder(req, res) {
     orderData.billItems[i] = {
       productId: product.productId,
       productName: product.name,
-      Image: product.images[0],
+      image: product.images[0],
       quantity: body.billItems[i].quantity,
       price: product.price
     }
