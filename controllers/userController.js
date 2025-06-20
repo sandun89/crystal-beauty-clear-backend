@@ -2,6 +2,7 @@ import User from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import axios from "axios";
 
 dotenv.config();
 
@@ -118,4 +119,36 @@ export function getAllUsers(req, res) {
       message: "Please login as admin before get all user details",
     });
   }
+}
+
+export async function googleLogin(req, res) {
+  const accessToken = req.body.accessToken;
+  try {
+    const response = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo",{
+      headers: {
+        Authorization: "Bearer " + accessToken
+      }
+    });
+    const user = User.findOne({
+      email: response.data.email
+    })
+    
+    if (user == null) {
+      const newUser = new User({
+        email: response.data.email,
+        firstName: response.data.given_name,
+        lastName: response.data.family_name,
+        isEmailVerified: true,
+        password: accessToken
+      });
+
+      await newUser.save();
+      res.json({
+        message: "Login Successfull"
+      })
+    }
+  } catch (error) {
+    
+  }
+
 }
