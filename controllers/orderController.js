@@ -103,6 +103,9 @@ export async function updateOrder(req, res){
     }
     const orderId = req.params.orderId;
     const order = await Order.findOneAndUpdate({ orderId: orderId }, req.body);
+    res.json({
+      message: "Örder Updated Successfully"
+    });
   } catch (error) {
     res.status(500).json({
       message: "Örder not Updated",
