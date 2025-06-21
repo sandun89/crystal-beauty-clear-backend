@@ -4,3 +4,7 @@ export function generateUniqueId(prefix = "", base = 16) {
   const uniqueId = dateString + numberString;
   return prefix + uniqueId.toUpperCase();
 }
+
+export function generateOtp(){
+  return generateUniqueId().slice(0, 6);
+}
