@@ -129,26 +129,70 @@ export async function googleLogin(req, res) {
         Authorization: "Bearer " + accessToken
       }
     });
-    const user = User.findOne({
+    const user = await User.findOne({
       email: response.data.email
-    })
+    });
     
     if (user == null) {
-      const newUser = new User({
+      const userData = {
         email: response.data.email,
         firstName: response.data.given_name,
         lastName: response.data.family_name,
+        role: "user",
+        phone: "Not Given",
+        isDisabled: false,
         isEmailVerified: true,
         password: accessToken
+      };
+
+      const newUser = new User(userData);
+      await newUser.save();
+      
+      const token = jwt.sign(userData, process.env.JWT_KEY, {
+        expiresIn: "48hrs"
       });
 
-      await newUser.save();
       res.json({
-        message: "Login Successfull"
-      })
+        message: "Login Successfull",
+        token: token,
+        user: userData
+      });
+    } else {
+      const userData = {
+        email: user.email,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				role: user.role,
+				phone: user.phone,
+				isDisabled: user.isDisabled,
+				isEmailVerified: user.isEmailVerified
+      }
+
+      const token = jwt.sign(userData, process.env.JWT_KEY, {
+        expiresIn: "48hrs"
+      });
+
+      res.json({
+        message: "Login Successfull",
+        token: token,
+        user: userData
+      });
     }
   } catch (error) {
-    
+    res.status(500).json({
+      message: "Google Login Failed"
+    });
   }
+}
 
+export async function getCurrentUser(req, res){
+  if(req.user == null) {
+    res.status(403).json({
+      message: "Please Login to get User Details"
+    });
+    return;
+  }
+  res.json({
+    user: req.user
+  });
 }
