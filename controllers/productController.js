@@ -128,14 +128,13 @@ export function updateProduct(req, res) {
 
 export async function searchProduct(req, res){
   const search = req.params.query;
-
   try {
     const products = await Product.find({
     $or: [
-      {name: {$regx: search, $options: "i"}},
-      {altName: { $eleMatch: {$regx: search, $options: "i"}}}
+      {name: {$regex: search, $options: "i"}},
+      {altName: { $elemMatch: {$regex: search, $options: "i"}}}
     ]
-  });
+  });console.log(search)
 
   res.json({
     products: products
