@@ -77,10 +77,7 @@ export function getOrders(req, res) {
       email: req.user.email,
     })
       .then((orders) => {
-        res.json({
-          message: "Orders Fetch Success",
-          orders: orders
-        });
+        res.json(orders);
       })
       .catch((err) => {
         res.status(500).json({
