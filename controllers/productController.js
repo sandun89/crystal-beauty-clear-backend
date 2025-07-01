@@ -134,7 +134,7 @@ export async function searchProduct(req, res){
       {name: {$regex: search, $options: "i"}},
       {altName: { $elemMatch: {$regex: search, $options: "i"}}}
     ]
-  });console.log(search)
+  });
 
   res.json({
     products: products
@@ -145,5 +145,20 @@ export async function searchProduct(req, res){
       message: "Error in Searching Product"
     });
     return;
+  }
+}
+
+export async function getRandomProducts(req, res){
+  try {
+    const randomProducts = await Product.aggregate([
+      {$sample: {size: 5}}
+    ]);
+    res.json({
+      products: randomProducts
+    })
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong"
+    })
   }
 }

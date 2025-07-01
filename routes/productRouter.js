@@ -4,6 +4,7 @@ import {
   deleteProduct,
   getProductById,
   getProducts,
+  getRandomProducts,
   searchProduct,
   updateProduct,
 } from "../controllers/productController.js";
@@ -11,6 +12,7 @@ import {
 const productRouter = express.Router();
 
 productRouter.post("/", createProduct);
+productRouter.get("/random", getRandomProducts);
 productRouter.get("/", getProducts);
 productRouter.get("/:productId", getProductById);
 productRouter.get("/search/:query", searchProduct);
