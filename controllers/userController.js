@@ -66,6 +66,38 @@ export function saveUser(req, res) {
     });
 }
 
+export function updateUser(req, res) {
+  if (req.user == null) {
+    res.status(403).json({
+      message: "User must login to continue",
+    });
+    return;
+  }
+
+  if (req.user.role == "admin") {
+    User.findOneAndUpdate(
+      {
+        email: req.body.email,
+      },
+      req.body
+    )
+      .then(() => {
+        res.json({
+          message: "User updated successfully",
+        });
+      })
+      .catch((err) => {
+        res.status(500).json({
+          message: "User not updated",
+        });
+      });
+  } else {
+    res.status(403).json({
+      message: "Please login as admin before update user",
+    });
+  }
+}
+
 export function loginUser(req, res) {
   const email = req.body.email;
   const password = req.body.password;
@@ -107,6 +139,7 @@ export function loginUser(req, res) {
 }
 
 export function getAllUsers(req, res) {
+  console.log(req.body);
   if (req.user == null) {
     res.status(403).json({
       message: "User must login to continue",
@@ -253,32 +286,32 @@ export async function changePassword(req, res) {
 
   try {
     const lastOtpData = await OTP.findOne({
-      email: email
-    }).sort({ dateCreated: -1});
+      email: email,
+    }).sort({ dateCreated: -1 });
 
     if (lastOtpData == null) {
       res.status(404).json({
-        message: "No OTP Data Found for this Email"
-      })
+        message: "No OTP Data Found for this Email",
+      });
       return;
     }
 
     if (lastOtpData.otp != otp) {
       res.status(404).json({
-        message: "Invalid OTP"
+        message: "Invalid OTP",
       });
       return;
     }
 
     const hashPassword = bcrypt.hashSync(password, 10);
-    await User.updateOne({ email: email}, {password: hashPassword});
-    await OTP.deleteMany({email: email});
+    await User.updateOne({ email: email }, { password: hashPassword });
+    await OTP.deleteMany({ email: email });
     res.json({
-      message: "Password Changed Successfully"
-    })
+      message: "Password Changed Successfully",
+    });
   } catch (error) {
     res.status(500).json({
-      message: "Error Changing Password"
-    })
+      message: "Error Changing Password",
+    });
   }
 }

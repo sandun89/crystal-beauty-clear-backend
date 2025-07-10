@@ -7,11 +7,13 @@ import {
   loginUser,
   saveUser,
   sendOtp,
+  updateUser,
 } from "../controllers/userController.js";
 
 const userRouter = express.Router();
 
 userRouter.post("/", saveUser); //save user
+userRouter.put("/", updateUser);
 userRouter.post("/login", loginUser); //login user
 userRouter.post("/google", googleLogin); //login using google
 userRouter.get("/current", getCurrentUser); //get current user details
